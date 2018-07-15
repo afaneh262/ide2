@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>IDE</title>
+</head>
+<link rel="stylesheet" href="../node_modules/x-chrome-tabs/src/css/base.min.css"/>
+<link rel="stylesheet" href="../css/main.css"/>
+<link rel="stylesheet" href="../css/tree.css"/>
+<body>
+<!-- All of the Node.js APIs are available in this renderer process. -->
+<!--We are using Node.js <script>document.write(process.versions.node)</script>,
+Chromium <script>document.write(process.versions.chrome)</script>,
+and Electron <script>document.write(process.versions.electron)</script>.
+-->
+
+<!--<textarea rows="30" cols="85" style="resize: none" id="main-text">
+</textarea>-->
+
+
+<div class="wrapper">
+    <div class="tree-wrapper">
+        This your tree
+    </div>
+    <div class="main-wrapper">
+        <div class="chrome-tabs"></div>
+
+        <div class="etabs-views"></div>
+
+        <div id="open_file_path" hidden></div>
+    </div>
+</div>
+<script>
+    // You can also require other files to run in this process
+    require('../renderer.js')
+
+    let $ = require('jquery');
+
+    $.fn.chromeTabs = require('x-chrome-tabs');
+    var el = document.querySelector('.chrome-tabs')
+    var chromeTabs = $('.chrome-tabs').chromeTabs();
+
+    $(document).ready(() => {
+        chromeTabs.init(el, {
+            tabOverlapDistance: 14,
+            minWidth: 45,
+            maxWidth: 243
+        })
+    });
+
+    let settings = {
+        minWidth: 45,
+        maxWidth: 243,
+        leftPadding: 0,
+        leftPaddingMobile: 0,
+        rightPadding: 300,
+        rightPaddingMobile: 0,
+        overlapDistance: 14,
+        views: 'iframes', // or `webviews`.
+        // `webviews` = Electron compatibility.
+        // Or leave empty to disable views entirely.
+        allowDragNDrop: true,
+        allowDoubleClick: true,
+        debug: 3 // Enable debugging for tests.
+    };
+
+
+    /*
+     ipcRenderer.on('asynchronous-reply', (event, arg) => {
+     console.log(arg) // prints "pong"
+     document.getElementById("main-text").value = "adddd";
+
+     })*/
+
+</script>
+</body>
+</html>
