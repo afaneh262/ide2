@@ -11,7 +11,7 @@ var file_data = "";
 
 
 ipcRenderer.on('open_file', (event, arg) => {
-    open_tab()
+    open_tab();
 
     setTimeout(function () {
         var y = document.getElementsByClassName("-view -current");
@@ -21,9 +21,9 @@ ipcRenderer.on('open_file', (event, arg) => {
                 fs = require('fs');
             console.log(beautify(file_data, {indent_size: 4}));
             y["0"].contentDocument.all["main-text"].value = beautify(file_data, {indent_size: 4});
-            beautify(y["0"].contentDocument.all["main-text"].value, {indent_size: 4});
-
-
+            beautify(y["0"].contentDocument.all["main-text"].value, {
+                indent_size: 4
+            });
             //console.log(y["0"].contentDocument.all["main-text"].value);
         }
         else {
