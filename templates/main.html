@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>IDE</title>
-</head>
+	<link href="../css/jqueryFileTree.css" rel="stylesheet" type="text/css"media="screen" />
+
+
 <link rel="stylesheet" href="../node_modules/x-chrome-tabs/src/css/base.min.css"/>
 <link rel="stylesheet" href="../css/main.css"/>
-<link rel="stylesheet" href="../css/tree.css"/>
-<link rel="stylesheet" href="../lib/codemirror.css"/>
+</head>
 <body>
 <!-- All of the Node.js APIs are available in this renderer process. -->
 <!--We are using Node.js <script>document.write(process.versions.node)</script>,
@@ -21,7 +22,8 @@ and Electron <script>document.write(process.versions.electron)</script>.
 
 <div class="wrapper">
     <div class="tree-wrapper">
-        This your tree
+	    <h3>Hi</h3>
+		<div id="mainwindow" class="demo"></div>
     </div>
     <div class="main-wrapper">
         <div class="chrome-tabs"></div>
@@ -31,27 +33,30 @@ and Electron <script>document.write(process.versions.electron)</script>.
         <div id="open_file_path" hidden></div>
     </div>
 </div>
-
 <script>
-
-
-
-
     // You can also require other files to run in this process
-    require('../renderer.js')
+	    //let $ = require('jquery');
+    let tm=require('../renderer.js')
+	require('../js/jquery.js')
+	require('../js/jquery.easing.js')
+	require('../js/jqueryFileTree.js')
+	console.log("%$%$%$%")
 
-    let $ = require('jquery');
-
-    $.fn.chromeTabs = require('x-chrome-tabs');
-    var el = document.querySelector('.chrome-tabs')
-    var chromeTabs = $('.chrome-tabs').chromeTabs();
+    //$.fn.chromeTabs = require('x-chrome-tabs');
+    //var el = document.querySelector('.chrome-tabs')
+    //var chromeTabs = $('.chrome-tabs').chromeTabs;
 
     $(document).ready(() => {
-        chromeTabs.init(el, {
-            tabOverlapDistance: 14,
-            minWidth: 45,
-            maxWidth: 243
-        })
+	console.log("!!!!!!")
+        //chromeTabs.init(el, {
+          //  tabOverlapDistance: 14,
+           // minWidth: 45,
+            //maxWidth: 243
+        //})
+		$('#mainwindow').fileTree({ root: '/windows/', script: '../connectors/jqueryFileTree.js' }, function(filename) { 
+				console.log("^^^^^^^")
+				alert(filename);
+			});
     });
 
     let settings = {
