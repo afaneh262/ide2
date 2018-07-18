@@ -17,6 +17,14 @@ function createWindow() {
     }))
     menu.append(new MenuItem({type: 'separator'}))
     menu.append(new MenuItem({
+        label: 'Open Folder', click() {
+            mainWindow.webContents.send('openFolder')
+        }
+    }))
+    menu.append(new MenuItem({type: 'separator'}))
+
+    menu.append(new MenuItem({type: 'separator'}))
+    menu.append(new MenuItem({
         label: 'create file', click() {
             mainWindow.webContents.send('create_file')
         }

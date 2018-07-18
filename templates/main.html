@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>IDE</title>
 </head>
-<link rel="stylesheet" href="../node_modules/x-chrome-tabs/src/css/base.min.css"/>
 <link rel="stylesheet" href="../css/main.css"/>
-<link rel="stylesheet" href="../css/tree.css"/>
+<link rel="stylesheet" href="../css/jqueryFileTree.css"/>
 <link rel="stylesheet" href="../lib/codemirror.css"/>
 <link rel="stylesheet" href="../lib/night.css">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
 
 <script>if (typeof module === 'object') {
     window.module = module;
@@ -18,6 +18,11 @@
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <!-- Insert this line after script imports -->
 <script>if (window.module) module = window.module;</script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+
 <script src="../lib/codemirror.js"></script>
 <script src="../lib/perl.js"></script>
 <body>
@@ -27,14 +32,8 @@ Chromium <script>document.write(process.versions.chrome)</script>,
 and Electron <script>document.write(process.versions.electron)</script>.
 -->
 
-<!--<textarea rows="30" cols="85" style="resize: none" id="main-text">
-</textarea>-->
-
-
 <div class="wrapper">
-    <div class="tree-wrapper">
-        This your tree
-    </div>
+    <div class="tree-wrapper"></div>
     <div class="main-wrapper">
         <div id="tabs">
             <ul class="tabs-nav"></ul>
@@ -42,17 +41,16 @@ and Electron <script>document.write(process.versions.electron)</script>.
     </div>
 </div>
 
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
 <script>
 
     var editors = [];
-    const {ipcRenderer} = require('electron')
-    const remote = require('electron').remote
-    const dialog = require('electron').remote.dialog
+
+    const dirTree = require('directory-tree');
+    const {ipcRenderer} = require('electron');
+    const remote = require('electron').remote;
+    const dialog = require('electron').remote.dialog;
     const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
     var file_data = "";
-
 
     $(".tabs-nav").on("click", ".close", function (ev) {
         ev.preventDefault();
@@ -241,6 +239,44 @@ and Electron <script>document.write(process.versions.electron)</script>.
 
     }
 
+
+    //Load folder
+    ipcRenderer.on('openFolder', (event, arg) => {
+        dialog.showOpenDialog({
+                properties: ['openDirectory']
+            },
+            (folders) => {
+                var folderName = folders[0];
+                var treeData = dirTree(folderName);
+
+                var formatTree = function (nodes) {
+                    var formmatedNodes = _.map(nodes, function (entry) {
+                        var formmatedEntry = {
+                            text: entry.name
+                        };
+
+                        if (entry.children && entry.children.length > 0) {
+                            formmatedEntry.children = formatTree(entry.children);
+                        }
+
+                        return formmatedEntry;
+                    });
+
+                    return formmatedNodes;
+                };
+
+                var treeReadyData = formatTree(treeData.children);
+
+                $('.tree-wrapper').empty();
+                $('.tree-wrapper').append('<div class="inner"></div>');
+
+                $('.tree-wrapper .inner').jstree({
+                    'core': {
+                        'data': treeReadyData
+                    }
+                });
+            });
+    });
 
     jQuery(function () {
         var tabs = $("#tabs").tabs();
