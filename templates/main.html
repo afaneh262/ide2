@@ -37,21 +37,7 @@ and Electron <script>document.write(process.versions.electron)</script>.
     </div>
     <div class="main-wrapper">
         <div id="tabs">
-            <ul class="tabs-nav">
-                <li>
-                    <a href="#tabs-1">
-                        Nunc tincidunt <span class="close">x</span>
-                    </a>
-                </li>
-            </ul>
-            <div id="tabs-1">
-                <p>Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec
-                    sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem.
-                    Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula
-                    eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam
-                    molestie erat. Ut et mauris vel pede varius sollicitudin. Sed ut dolor nec orci tincidunt interdum.
-                    Phasellus ipsum. Nunc tristique tempus lectus.</p>
-            </div>
+            <ul class="tabs-nav"></ul>
         </div>
     </div>
 </div>
@@ -100,7 +86,7 @@ and Electron <script>document.write(process.versions.electron)</script>.
         );
         $("div#tabs").append(
             "<div id='tab" + tabId + "'>" +
-            "<textarea rows='30' style='resize: none' id='tab" + tabId + "-textarea'></textarea>" +
+            "<div class='editor-wrap'><textarea rows='30' style='resize: none' id='tab" + tabId + "-textarea'></textarea></div>' " +
             "</div>"
         );
 

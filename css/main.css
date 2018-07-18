@@ -38,6 +38,11 @@
     cursor: pointer;
 }
 
+.CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+}
+
 .CodeMirror-linenumber {
     position: relative;
 }
@@ -51,4 +56,8 @@
     background: red;
     border-radius: 50%;
     top: 4px;
+}
+
+.editor-wrap {
+    height: calc(100vh - 113px);
 }
