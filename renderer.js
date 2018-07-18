@@ -11,7 +11,31 @@ var file_data = "";
 
 
 ipcRenderer.on('open_file', (event, arg) => {
-    open_tab();
+
+    dialog.showOpenDialog((fileNames) => {
+        // fileNames is an array that contains all the selected
+        if (fileNames === undefined) {
+            console.log("No file selected");
+            return;
+        }
+
+        var fileName = fileNames[0];
+
+        fs.readFile(fileName, 'utf-8', (err, data) => {
+            if (err) {
+                dialog.showErrorBox("File Save Error", err.message);
+                return;
+            }
+
+            file_data = data;
+
+            $chromeTabs._.addTab({
+                title: fileName,
+                url: './new_tab.html'
+            });
+        });
+    });
+
 
     setTimeout(function () {
         var y = document.getElementsByClassName("-view -current");
@@ -123,48 +147,7 @@ function open_tab2() {
 }
 
 function open_tab() {
-    dialog.showOpenDialog((fileNames) => {
-        // fileNames is an array that contains all the selected
-        if (fileNames === undefined) {
-            console.log("No file selected");
-            return;
-        }
-        var fileName = fileNames[0];
 
-
-        fs.readFile(fileName, 'utf-8', (err, data) => {
-            if (err) {
-                dialog.showErrorBox("File Save Error", err.message);
-                return;
-            }
-
-            file_data = data;
-
-
-            //alert("The file has been succesfully opened"+document.getElementById("open_file_path").value);
-
-
-            $('.chrome-tabs').chromeTabs(settings).each((i, obj) => {
-                let $chromeTabs = $(obj); // jQuery & class.
-                $chromeTabs._ = $chromeTabs.data('chromeTabs');
-                let $tabs = $chromeTabs._.addTabs([
-                    {
-                        title: fileName,
-                        favicon: 'https://duckduckgo.com/favicon.ico',
-                        url: './new_tab.html?data=' + data + "&file_name=" + fileName
-                    }
-                ]);
-
-                //document.getElementById("open_file_path").innerHTML = fileName;
-                //$('#open_file_path').text(fileName);
-
-            })
-            // Change how to handle the file content
-            //document.getElementById("main-text").value = data;
-
-
-        });
-    });
     //var iFrameDOM = $("iframe.-view -current").contents();
 
 

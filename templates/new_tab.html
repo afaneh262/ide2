@@ -9,12 +9,6 @@
     <script src="../lib/perl.js"></script>
 </head>
 <body>
-<!-- All of the Node.js APIs are available in this renderer process. -->
-<!--We are using Node.js <script>document.write(process.versions.node)</script>,
-Chromium <script>document.write(process.versions.chrome)</script>,
-and Electron <script>document.write(process.versions.electron)</script>.
--->
-<div id="tab_file_path" hidden></div>
 <textarea rows="30"
           cols="85"
           style="resize: none"
@@ -23,13 +17,13 @@ and Electron <script>document.write(process.versions.electron)</script>.
 <script src="../lib/codemirror.js" type="text/javascript"></script>
 <script src="../lib/perl.js" type="text/javascript"></script>
 
-<script LANGUAGE="JavaScript">
+<script type="text/javascript">
+    const fs = require('fs');
 
     var editor = CodeMirror.fromTextArea(document.getElementById("main-text"), {
         lineNumbers: true,
-        mode:  "Perl",
+        mode: "Perl",
         theme: "night",
-
     });
 
     function getParams() {
@@ -44,19 +38,23 @@ and Electron <script>document.write(process.versions.electron)</script>.
         }
         return params;
     }
-    params = getParams();
-    data = params["data"];
-    file_path = params["file_name"];
-    //document.getElementById("main-text").value = data;
 
-    document.getElementById("tab_file_path").innerHTML = file_path;
-    /*var editor = CodeMirror.fromTextArea(document.getElementById("main-text"), {
-     mode: "text/html",
-     matchBrackets: true,
-     lineNumbers: true,
-     });*/
-    //$('#open_file_path').text(fileName);
-    //alert(document.getElementById("tab_file_path").innerHTML);
+    params = getParams();
+    file_path = params["file_name"];
+
+    fs.readFile(file_path, 'utf-8', (err, data) => {
+        console.log("fileName", fileName);
+
+        if (err) {
+            dialog.showErrorBox("File Save Error", err.message);
+            return;
+        }
+
+        file_data = data;
+
+        editor.setValue(file_data);
+    });
+
 </script>
 </body>
 </html>

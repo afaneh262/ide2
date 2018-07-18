@@ -14,3 +14,41 @@
     width: calc(100% - 300px);
     float: left;
 }
+
+#tabs .tabs-nav {
+
+}
+
+#tabs .tabs-nav a {
+    position: relative;
+    padding-right: 30px;
+}
+
+#tabs .tabs-nav .close {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    color: #000;
+    right: 5px;
+    top: 8px;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.CodeMirror-linenumber {
+    position: relative;
+}
+
+.CodeMirror-linenumber.has-breakpoint::before {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: red;
+    border-radius: 50%;
+    top: 4px;
+}

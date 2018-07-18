@@ -8,6 +8,18 @@
 <link rel="stylesheet" href="../css/main.css"/>
 <link rel="stylesheet" href="../css/tree.css"/>
 <link rel="stylesheet" href="../lib/codemirror.css"/>
+<link rel="stylesheet" href="../lib/night.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script>if (typeof module === 'object') {
+    window.module = module;
+    module = undefined;
+}</script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<!-- Insert this line after script imports -->
+<script>if (window.module) module = window.module;</script>
+<script src="../lib/codemirror.js"></script>
+<script src="../lib/perl.js"></script>
 <body>
 <!-- All of the Node.js APIs are available in this renderer process. -->
 <!--We are using Node.js <script>document.write(process.versions.node)</script>,
@@ -24,60 +36,235 @@ and Electron <script>document.write(process.versions.electron)</script>.
         This your tree
     </div>
     <div class="main-wrapper">
-        <div class="chrome-tabs"></div>
-
-        <div class="etabs-views"></div>
-
-        <div id="open_file_path" hidden></div>
+        <div id="tabs">
+            <ul class="tabs-nav">
+                <li>
+                    <a href="#tabs-1">
+                        Nunc tincidunt <span class="close">x</span>
+                    </a>
+                </li>
+            </ul>
+            <div id="tabs-1">
+                <p>Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec
+                    sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem.
+                    Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula
+                    eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam
+                    molestie erat. Ut et mauris vel pede varius sollicitudin. Sed ut dolor nec orci tincidunt interdum.
+                    Phasellus ipsum. Nunc tristique tempus lectus.</p>
+            </div>
+        </div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <script>
 
+    var editors = [];
+    const {ipcRenderer} = require('electron')
+    const remote = require('electron').remote
+    const dialog = require('electron').remote.dialog
+    const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
+    var file_data = "";
 
 
+    $(".tabs-nav").on("click", ".close", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
 
-    // You can also require other files to run in this process
-    require('../renderer.js')
-
-    let $ = require('jquery');
-
-    $.fn.chromeTabs = require('x-chrome-tabs');
-    var el = document.querySelector('.chrome-tabs')
-    var chromeTabs = $('.chrome-tabs').chromeTabs();
-
-    $(document).ready(() => {
-        chromeTabs.init(el, {
-            tabOverlapDistance: 14,
-            minWidth: 45,
-            maxWidth: 243
-        })
+        var tabId = $(this).parent('a').attr('href').replace('#', '');
+        close_tab(tabId);
     });
 
-    let settings = {
-        minWidth: 45,
-        maxWidth: 243,
-        leftPadding: 0,
-        leftPaddingMobile: 0,
-        rightPadding: 300,
-        rightPaddingMobile: 0,
-        overlapDistance: 14,
-        views: 'iframes', // or `webviews`.
-        // `webviews` = Electron compatibility.
-        // Or leave empty to disable views entirely.
-        allowDragNDrop: true,
-        allowDoubleClick: true,
-        debug: 3 // Enable debugging for tests.
+    $("body").on("click", ".CodeMirror-sizer .CodeMirror-linenumber", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        $(this).toggleClass('has-breakpoint');
+    });
+
+
+    //Close tab
+    function close_tab(tab_id) {
+        $('.tabs-nav a[href="#' + tab_id + '"]').parent().remove();
+        $('#tabs div#' + tab_id).remove();
+        $("#tabs").tabs("refresh");
+    }
+
+    var readFile = function (fileName) {
+
+        var tabId = (new Date()).getTime();
+
+        $("div#tabs ul").append(
+            "<li><a href='#tab" + tabId + "' data-file-name='" + fileName + "'>" + fileName + "<span class='close'>x</span></a></li>"
+        );
+        $("div#tabs").append(
+            "<div id='tab" + tabId + "'>" +
+            "<textarea rows='30' style='resize: none' id='tab" + tabId + "-textarea'></textarea>" +
+            "</div>"
+        );
+
+        $("div#tabs").tabs("refresh");
+
+        editors['tab' + tabId] = CodeMirror.fromTextArea(document.getElementById("tab" + tabId + "-textarea"), {
+            lineNumbers: true,
+            mode: "Perl",
+            theme: "night",
+        });
+
+        $("div#tabs").tabs("option", "active", $("div#tabs ul li").length - 1);
+
+        fs.readFile(fileName, 'utf-8', (err, data) => {
+            if (err) {
+                dialog.showErrorBox("File Save Error", err.message);
+                return;
+            }
+
+            file_data = data;
+
+            editors['tab' + tabId].setValue(file_data);
+        });
     };
 
+    ipcRenderer.on('open_file', (event, arg) => {
+        dialog.showOpenDialog((fileNames) => {
+            // fileNames is an array that contains all the selected
+            if (fileNames === undefined) {
+                console.log("No file selected");
+                return;
+            }
 
-    /*
-     ipcRenderer.on('asynchronous-reply', (event, arg) => {
-     console.log(arg) // prints "pong"
-     document.getElementById("main-text").value = "adddd";
+            var fileName = fileNames[0];
 
-     })*/
+            readFile(fileName);
+        });
+    });
 
+    ipcRenderer.on('create_file', (event, arg) => {
+        create_file2()
+    });
+
+    ipcRenderer.on('save_file', (event, arg) => {
+        var tab = $('.ui-tabs-active');
+        var tabId = tab.find('a').attr('href').replace('#', '');
+        saveFile(tabId);
+        close_tab(tabId);
+    });
+
+
+    function open_file() {
+        dialog.showOpenDialog((fileNames) => {
+            // fileNames is an array that contains all the selected
+            if (fileNames === undefined) {
+                console.log("No file selected");
+                return;
+            }
+
+            var fileName = fileNames[0];
+
+            fs.readFile(fileName, 'utf-8', (err, data) => {
+                if (err) {
+                    dialog.showErrorBox("File Save Error", err.message);
+                    return;
+                }
+                document.getElementById("open_file_path").value = fileName;
+
+                alert("The file has been succesfully opened" + document.getElementById("open_file_path").value);
+                // Change how to handle the file content
+                document.getElementById("main-text").value = data;
+            });
+        });
+
+    }
+
+    function create_file() {
+        dialog.showSaveDialog(function (fileName) {
+
+            if (fileName === undefined) {
+                console.log("No file name entered");
+                return;
+            }
+
+            fs.writeFile(fileName, "", function (err) {
+                if (err) {
+                    dialog.showErrorBox("File Save Error", err.message);
+                    return;
+                }
+                document.getElementById("open_file_path").value = fileName;
+                alert("The file has been succesfully saved" + document.getElementById("open_file_path").value);
+
+            });
+
+        });
+
+        document.getElementById("main-text").value = ""
+    }
+
+    function saveFile(tabId) {
+        var filePath = $('.tabs-nav a[href="#' + tabId + '"]').attr('data-file-name');
+        console.log("editors", editors);
+        console.log("tabId", tabId);
+        var content = editors[tabId].getValue()
+        console.log('content', content);
+        fs.writeFile(filePath, content, (err) => {
+            if (err) {
+                alert("An error ocurred updating the file" + err.message);
+                console.log(err);
+                return;
+            }
+
+            alert("The file has been succesfully saved");
+        });
+    }
+
+
+    function create_file2() {
+        dialog.showSaveDialog(function (fileName) {
+
+            if (fileName === undefined) {
+                console.log("No file name entered");
+                return;
+            }
+
+            fs.writeFile(fileName, "", function (err) {
+                if (err) {
+                    dialog.showErrorBox("File Save Error", err.message);
+                    return;
+                }
+                alert("The file has been succesfully created");
+
+            });
+
+            $('.chrome-tabs').chromeTabs(settings).each((i, obj) => {
+                let $chromeTabs = $(obj); // jQuery & class.
+                $chromeTabs._ = $chromeTabs.data('chromeTabs');
+                let $tabs = $chromeTabs._.addTabs([
+                    {
+                        title: fileName,
+                        favicon: 'https://duckduckgo.com/favicon.ico',
+                        url: './new_tab.html?data=' + "" + "&file_name=" + fileName
+                    }
+                ]);
+
+                //document.getElementById("open_file_path").innerHTML = fileName;
+                //$('#open_file_path').text(fileName);
+
+            })
+
+        });
+
+    }
+
+
+    jQuery(function () {
+        var tabs = $("#tabs").tabs();
+        tabs.find(".ui-tabs-nav").sortable({
+            axis: "x",
+            stop: function () {
+                tabs.tabs("refresh");
+            }
+        });
+    });
 </script>
 </body>
 </html>
