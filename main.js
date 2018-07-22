@@ -22,59 +22,59 @@ function createWindow() {
         label: 'File',
         submenu: [
             {
-                label: 'open file', click() {
+                label: 'Open File', accelerator: 'Ctrl+o', click() {
                 mainWindow.webContents.send('open_file');
             }
             },
             {
-                label: 'Open Folder', click() {
+                label: 'Open Folder', accelerator: 'Ctrl+Shift+o', click() {
                 mainWindow.webContents.send('openFolder');
             }
             },
             {
-                label: 'create file', click() {
+                label: 'Create File', accelerator: 'Ctrl+n', click() {
                 mainWindow.webContents.send('create_file');
             }
             },
             {
-                label: 'save file', click() {
-            }
+                label: 'Save File', accelerator: 'Ctrl+s', click() {
+                mainWindow.webContents.send('save_file')
+				}
             }
         ]
     }))
 
     menu.append(new MenuItem({type: 'separator'}));
     menu.append(new MenuItem({
-        label: 'Debug', click() {
-            mainWindow.webContents.send('debug');
-        }
+		label: 'Run',
+        submenu: [
+			{
+				label: 'Debug', accelerator: 'F5', click() {
+					console.log("deeeebug");
+					mainWindow.webContents.send('debug');
+				}
+			},
+			{
+				label: 'Compile', accelerator: 'F9', click() {
+					mainWindow.webContents.send('compile');
+				}
+			}
+        ]
+		
+		
     }));
 
-    menu.append(new MenuItem({type: 'separator'}));
-
-    menu.append(new MenuItem({
-        label: 'open file', click() {
-            mainWindow.webContents.send('open_file')
-        }
-    }));
-
-    menu.append(new MenuItem({
-            label: 'save file', click() {
-                mainWindow.webContents.send('save_file')
-            }
-        }
-    ))
 
     menu.append(new MenuItem({
         label: 'Templates',
         submenu: [
             {
-                label: 'Create API template', click() {
+                label: 'Create API template', accelerator: 'Shift+A', click() {
                 mainWindow.webContents.send('createApiTemplate')
             }
             },
             {
-                label: 'Create Step Template', click() {
+                label: 'Create Step Template', accelerator: 'Shift+S', click() {
                 mainWindow.webContents.send('createStepTemplate')
             }
             }

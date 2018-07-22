@@ -67,14 +67,17 @@ and Electron <script>document.write(process.versions.electron)</script>.
     <span class="close">&times;</span>
 		API Name/Path:<br><input type="text" id="api_full_path" style="width:100%"><br>
 		<br>
+		<div id="options">
 		Supported OS's:<br>
 		<input type="checkbox" id="api_all_os_support" checked>All OS's<br>
 		<input type="checkbox">RH Family<br>
 		<input type="checkbox">RH 7.2<br>
 		<input type="checkbox">Ubuntu Family<br>
 		<input type="checkbox">Fedora 21<br>
+		</div>
 		<br>
-		<button type="submit" value="Submit" onclick="createApi()">Create</button>
+		<button type="submit" value="Submit" onclick="createApi()" id="api_btn">Create</button>
+		<button type="submit" value="Submit" onclick="createStep()" id="step_btn">Create</button>
   </div>
 
 </div>
@@ -83,6 +86,7 @@ and Electron <script>document.write(process.versions.electron)</script>.
             <ul class="tabs-nav"></ul>
         </div>
     </div>
+	<div id="debug-area">Debug Area</div>
 </div>
 
 <script>
@@ -180,10 +184,15 @@ and Electron <script>document.write(process.versions.electron)</script>.
     });
 
 	ipcRenderer.on('createApiTemplate', (event, arg) => {
+		document.getElementById("step_btn").style.visibility = "hidden";
         createApiTemplate();
     });
 
 	ipcRenderer.on('createStepTemplate', (event, arg) => {
+		document.getElementById("api_btn").style.visibility = "hidden";
+		document.getElementById("options").style.visibility = "hidden";
+		document.getElementById("step_btn").style.visibility = "visible";
+		
         createStepTemplate();
     });
 
@@ -366,7 +375,18 @@ and Electron <script>document.write(process.versions.electron)</script>.
         });
     });
 
+	function createStepTemplate()
+	{
+		//alert("API");
+		// Get the modal
+		var modal = document.getElementById('myModal');
 
+		// Get the <span> element that closes the modal
+		var span = document.getElementsByClassName("close")[0];
+
+		// When the user clicks on the button, open the modal
+		modal.style.display = "block";
+	}
 	function createApiTemplate()
 	{
 		//alert("API");
@@ -401,34 +421,286 @@ and Electron <script>document.write(process.versions.electron)</script>.
 		var modal = document.getElementById('myModal');
 		modal.style.display = "none";
 
+		if (api_full_path === undefined) {
+			alert("No API name entered");
+			return;
+		}
+		
 		//$host->api->shell->hypervisor->vfs->bus->show_max_allowed_vfs($bus_number)
+		var [api_file_name, func_name, params] = extract_api_name_and_file_path(api_full_path);
 
-		api_file_name = "";
+		
+		
+		
+		fs.readFile(api_file_name, 'utf-8', (err, data) => {
+			if (err) {
+				fs.writeFile(api_file_name, "", function (err) {
+					if (err) {
+						dialog.showErrorBox("File Save Error", err.message);
+						return;
+					}
+					alert("The file has been succesfully created");
+
+				});
+			}
+		});
+			
+		//append to file;
+		var header;
+		header = `
+# FUNCTION NAME: `+func_name+`
+# WRITTEN BY:
+# DATE: 
+# PURPOSE: 
+# NOTES: 
+# HISTORY: 
+# IN PARAMS: `+params+`
+# OPTIONAL: 
+# RETURNED VALUES: hash reference of: status: Pass: 0. Fail: 1.
+#                           error: User defined error message in case of failure
+#                           value: None
+# Sample call: `+api_full_path;
+	
+	
+	var params_num = params.split(",");
+	var params_num = params_num.length;
+	
+	var params_dollars_number = "";
+	for (i = 0; i < params_num; i++) { 
+		params_dollars_number += "\$";
+	}
+	
+	var func_tag = "sub "+func_name+"("+params_dollars_number+")";
+	
+	var splitted_params = params;
+		
+	var params_without_dollars = params;
+	params_without_dollars = params_without_dollars.replace(/\$/g, "");
+	
+	var params_vars = `\n    my \$self = shift;
+    my (`+splitted_params+`) = \@_;
+    printer::Logger_screen_message(\"Info\", \" Function started\", \"\", \$logger);
+    global::check_params(\"`+params_without_dollars+`\",\@_);
+	
+	# API implenetation will be here
+	`;
+	
+	var apiContent = header+"\n"+func_tag+"\n{"+params_vars+"\n}\n";
+	
+
+		fs.appendFile(api_file_name, apiContent, function (err) {
+		    if (err)
+			{
+				dialog.showErrorBox("unable to append API content to file", err.message);
+				return;
+			}
+		});
+
+		readFile(api_file_name);
+	}
+	
+	function extract_api_name_and_file_path(api)
+	{	
+		var path, func_name, tmp_path, params, params;
+		
+		//# $host->api->shell->tools->iproute->devlink->device->change_mode_legacy($bus)
+		//# should return: change_mode_legacy, and
+		//# /.autodirect/swgwork/mohammadah/trunk/
+		//# host_api/shell/tools/iproute/devlink/device/host_linux_api_shell_tools_iproute_devlink_device.pm
+		
+		if(!api.search(/^$host->api/i))
+		{
+			return;
+		}
+		
+		// ->shell->tools->iproute->devlink->device->change_mode_legacy($bus)
+		api = api.replace(/\$host->api/i,"");
+		
+		// shell->tools->iproute->devlink->device
+		var rx = /->(.*)->/g;
+		var tmp_path = rx.exec(api);
+
+		tmp_path = tmp_path[1];
+		tmp_path = tmp_path.replace(/->/g,"\\");
+		
+		var file_path = tmp_path;
+		
+		tmp_path = tmp_path.replace(/\\/g,"_");
+		
+		path = "C:\\Users\\mabuhassan\\Desktop\\Hack\\test\\H-IDE\\host_api\\"+file_path+"\\host_linux_api_"+tmp_path+".pm";
+
+		// ->shell->tools->iproute->devlink->device->change_mode_legacy($bus)
+		// change_mode_legacy($bus)
+
+		rx = /->(.*)\(/;
+		func_name = rx.exec(api);
+		
+		func_name = func_name[1];
+		func_name = func_name.replace(/.*->/g,"");
+		//alert(func_name);
+		
+		rx = /\((.*)\)/;
+		params = rx.exec(api);
+		params = params[1];
+
+		return [path, func_name, params];
+	}
+	
+	function extract_step_name_and_file_path(api)
+	{	
+		var path, func_name, tmp_path, params, params;
+		
+		//# $host->api->shell->tools->iproute->devlink->device->change_mode_legacy($bus)
+		//# should return: change_mode_legacy, and
+		//# /.autodirect/swgwork/mohammadah/trunk/
+		//# host_api/shell/tools/iproute/devlink/device/host_linux_api_shell_tools_iproute_devlink_device.pm
+		
+		if(!api.search(/^$steps->host/i))
+		{
+			return;
+		}
+		
+		// ->shell->tools->iproute->devlink->device->change_mode_legacy($bus)
+		api = api.replace(/\$steps->host/i,"");
+		
+		// shell->tools->iproute->devlink->device
+		var rx = /->(.*)->/g;
+		var tmp_path = rx.exec(api);
+
+		tmp_path = tmp_path[1];
+		tmp_path = tmp_path.replace(/->/g,"\\");
+		
+		var file_path = tmp_path;
+		
+		tmp_path = tmp_path.replace(/\\/g,"_");
+		
+		path = "C:\\Users\\mabuhassan\\Desktop\\Hack\\test\\H-IDE\\steps_api\\host\\"+file_path+"\\steps_api_host_"+tmp_path+".pm";
+
+		// ->shell->tools->iproute->devlink->device->change_mode_legacy($bus)
+		// change_mode_legacy($bus)
+
+		rx = /->(.*)\(/;
+		func_name = rx.exec(api);
+		
+		func_name = func_name[1];
+		func_name = func_name.replace(/.*->/g,"");
+		//alert(func_name);
+		
+		rx = /\((.*)\)/;
+		params = rx.exec(api);
+		params = params[1];
+
+		return [path, func_name, params];
+	}
+	
+	function createStep()
+	{
+		var api_full_path = document.getElementById('api_full_path').value;
+		//alert(api_full_path);
+		var modal = document.getElementById('myModal');
+		modal.style.display = "none";
 
 		if (api_full_path === undefined) {
 			alert("No API name entered");
 			return;
 		}
+		
+		//$host->api->shell->hypervisor->vfs->bus->show_max_allowed_vfs($bus_number)
+		var [api_file_name, func_name, params] = extract_step_name_and_file_path(api_full_path);
 
-		fs.writeFile(api_file_name, "", function (err) {
+		
+		
+		
+		fs.readFile(api_file_name, 'utf-8', (err, data) => {
 			if (err) {
-				dialog.showErrorBox("File Save Error", err.message);
+				fs.writeFile(api_file_name, "", function (err) {
+					if (err) {
+						dialog.showErrorBox("File Save Error", err.message);
+						return;
+					}
+					alert("The file has been succesfully created");
+
+				});
+			}
+		});
+			
+		//append to file;
+		var header;
+		header = `
+# FUNCTION NAME: `+func_name+`
+# WRITTEN BY:
+# DATE: 
+# PURPOSE: 
+# NOTES: 
+# HISTORY: 
+# IN PARAMS: `+params+`
+# OPTIONAL: 
+# RETURNED VALUES: hash reference of: status: Pass: 0. Fail: 1.
+#                           error: User defined error message in case of failure
+#                           value: None
+# Sample call: `+api_full_path;
+	
+	
+	var params_num = params.split(",");
+	var params_num = params_num.length;
+	
+	var params_dollars_number = "";
+	for (i = 0; i < params_num; i++) { 
+		params_dollars_number += "\$";
+	}
+	
+	var func_tag = "sub "+func_name+"("+params_dollars_number+")";
+	
+	var splitted_params = params;
+		
+	var params_without_dollars = params;
+	params_without_dollars = params_without_dollars.replace(/\$/g, "");
+	
+	var params_vars = `\n    my \$self = shift;
+    my (`+splitted_params+`) = \@_;
+    printer::Logger_screen_message(\"Info\", \" Function started\", \"\", \$logger);
+    global::check_params(\"`+params_without_dollars+`\",\@_);
+	
+	my (\$action, \$expect, \$cmd_result);
+	`;
+	
+	var steps_cnt = `    \$action=\"action will be here\";
+    \$expect=\"Operation succeeded\";
+    printer::colorized_msg (\"\$action\\n\",\"green\");
+    #########################################################################################
+
+    #\$cmd_result = call API;
+    \$self->report_step_result(\$reporter, \$action, \$expect, \$cmd_result->{error});\n\n`;
+	
+	var apiContent = header+"\n"+func_tag+"\n{"+params_vars+"\n"+steps_cnt+"}\n";
+	
+
+		fs.appendFile(api_file_name, apiContent, function (err) {
+		    if (err)
+			{
+				dialog.showErrorBox("unable to append API content to file", err.message);
 				return;
 			}
-			alert("The file has been succesfully created");
-
 		});
-		//append to file;
 
 		readFile(api_file_name);
-
 	}
+	
+	// compile
+	ipcRenderer.on('compile', (event, arg) => {		
+		var sync = require('child_process').spawnSync;
+		
+		var ls = sync('perl', ['-c', 'test.pl']);
 
+		console.log(ls.stderr.toString());
+		var out = ls.stderr.toString();
+		out = out.replace(/syntax/ig, "<br/>syntax");
+		out = out.replace("<br/>", "");
+		out = out.replace("test.pl had compilation errors.", "<br/>test.pl had compilation errors.");
+		document.getElementById('debug-area').innerHTML = out;
 
-	function createStepTemplate()
-	{
-		alert("STEP");
-	}
+    });
+
 </script>
 </body>
 </html>
