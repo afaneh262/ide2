@@ -9,25 +9,38 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({width: 800, height: 600})
 
-    const menu = new Menu()
+    const menu = new Menu();
+
     menu.append(new MenuItem({
         label: 'Reload', click() {
-            mainWindow.reload()
+            mainWindow.reload();
         }
-    }))
-    menu.append(new MenuItem({type: 'separator'}))
-    menu.append(new MenuItem({
-        label: 'Open Folder', click() {
-            mainWindow.webContents.send('openFolder')
-        }
-    }))
-    menu.append(new MenuItem({type: 'separator'}))
+    }));
 
-    menu.append(new MenuItem({type: 'separator'}))
+    menu.append(new MenuItem({type: 'separator'}));
     menu.append(new MenuItem({
-        label: 'create file', click() {
-            mainWindow.webContents.send('create_file')
-        }
+        label: 'File',
+        submenu: [
+            {
+                label: 'open file', click() {
+                mainWindow.webContents.send('open_file');
+            }
+            },
+            {
+                label: 'Open Folder', click() {
+                mainWindow.webContents.send('openFolder');
+            }
+            },
+            {
+                label: 'create file', click() {
+                mainWindow.webContents.send('create_file');
+            }
+            },
+            {
+                label: 'save file', click() {
+            }
+            }
+        ]
     }))
 
     menu.append(new MenuItem({type: 'separator'}));
@@ -36,30 +49,50 @@ function createWindow() {
             mainWindow.webContents.send('debug');
         }
     }));
-    menu.append(new MenuItem({type: 'separator'}))
+
+    menu.append(new MenuItem({type: 'separator'}));
+
     menu.append(new MenuItem({
         label: 'open file', click() {
             mainWindow.webContents.send('open_file')
         }
-    }))
+    }));
+
     menu.append(new MenuItem({
-        label: 'save file', click() {
-            mainWindow.webContents.send('save_file')
+            label: 'save file', click() {
+                mainWindow.webContents.send('save_file')
+            }
         }
+    ))
+
+    menu.append(new MenuItem({
+        label: 'Templates',
+        submenu: [
+            {
+                label: 'Create API template', click() {
+                mainWindow.webContents.send('createApiTemplate')
+            }
+            },
+            {
+                label: 'Create Step Template', click() {
+                mainWindow.webContents.send('createStepTemplate')
+            }
+            }
+        ]
     }))
 
     Menu.setApplicationMenu(menu)
 
     mainWindow.webContents.openDevTools();
 
-    // and load the index.html of the app.
+// and load the index.html of the app.
     mainWindow.loadFile('templates/main.html')
 
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+// Open the DevTools.
+// mainWindow.webContents.openDevTools()
 
 
-    // Emitted when the window is closed.
+// Emitted when the window is closed.
     mainWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
