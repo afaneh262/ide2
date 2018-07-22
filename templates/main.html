@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta charset="UTF-8">
     <title>IDE</title>
-<<<<<<< Updated upstream
 	<link href="../css/jqueryFileTree.css" rel="stylesheet" type="text/css"media="screen" />
-=======
-</head>
+
 <link rel="stylesheet" href="../css/main.css"/>
 <link rel="stylesheet" href="../lib/codemirror.css"/>
 <link rel="stylesheet" href="../lib/night.css">
@@ -20,11 +18,31 @@
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <!-- Insert this line after script imports -->
 <script>if (window.module) module = window.module;</script>
->>>>>>> Stashed changes
-
 
 <link rel="stylesheet" href="../node_modules/x-chrome-tabs/src/css/base.min.css"/>
 <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<link rel="stylesheet" href="../css/main.css"/>
+<link rel="stylesheet" href="../css/jqueryFileTree.css"/>
+<link rel="stylesheet" href="../lib/codemirror.css"/>
+<link rel="stylesheet" href="../lib/night.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
+
+<script>if (typeof module === 'object') {
+    window.module = module;
+    module = undefined;
+}</script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<!-- Insert this line after script imports -->
+<script>if (window.module) module = window.module;</script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+
+<script src="../lib/codemirror.js"></script>
+<script src="../lib/perl.js"></script>
 </head>
 <body>
 <!-- All of the Node.js APIs are available in this renderer process. -->
@@ -33,73 +51,286 @@ Chromium <script>document.write(process.versions.chrome)</script>,
 and Electron <script>document.write(process.versions.electron)</script>.
 -->
 
-<!--<textarea rows="30" cols="85" style="resize: none" id="main-text">
-</textarea>-->
-
-
 <div class="wrapper">
-    <div class="tree-wrapper">
-	    <h3>Hi</h3>
-		<div id="mainwindow" class="demo"></div>
-    </div>
+    <div class="tree-wrapper"></div>
     <div class="main-wrapper">
-        <div class="chrome-tabs"></div>
-
-        <div class="etabs-views"></div>
-
-        <div id="open_file_path" hidden></div>
+        <div id="tabs">
+            <ul class="tabs-nav"></ul>
+        </div>
     </div>
 </div>
+
 <script>
-    // You can also require other files to run in this process
-	    //let $ = require('jquery');
-    let tm=require('../renderer.js')
-	require('../js/jquery.js')
-	require('../js/jquery.easing.js')
-	require('../js/jqueryFileTree.js')
-	console.log("%$%$%$%")
 
-    //$.fn.chromeTabs = require('x-chrome-tabs');
-    //var el = document.querySelector('.chrome-tabs')
-    //var chromeTabs = $('.chrome-tabs').chromeTabs;
+    var editors = [];
 
-    $(document).ready(() => {
-	console.log("!!!!!!")
-        //chromeTabs.init(el, {
-          //  tabOverlapDistance: 14,
-           // minWidth: 45,
-            //maxWidth: 243
-        //})
-		$('#mainwindow').fileTree({ root: '/windows/', script: '../connectors/jqueryFileTree.js' }, function(filename) { 
-				console.log("^^^^^^^")
-				alert(filename);
-			});
+    const dirTree = require('directory-tree');
+    const {ipcRenderer} = require('electron');
+    const remote = require('electron').remote;
+    const dialog = require('electron').remote.dialog;
+    const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
+    var file_data = "";
+
+    $(".tabs-nav").on("click", ".close", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        var tabId = $(this).parent('a').attr('href').replace('#', '');
+        close_tab(tabId);
     });
 
-    let settings = {
-        minWidth: 45,
-        maxWidth: 243,
-        leftPadding: 0,
-        leftPaddingMobile: 0,
-        rightPadding: 300,
-        rightPaddingMobile: 0,
-        overlapDistance: 14,
-        views: 'iframes', // or `webviews`.
-        // `webviews` = Electron compatibility.
-        // Or leave empty to disable views entirely.
-        allowDragNDrop: true,
-        allowDoubleClick: true,
-        debug: 3 // Enable debugging for tests.
+    $("body").on("click", ".CodeMirror-sizer .CodeMirror-linenumber", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        $(this).toggleClass('has-breakpoint');
+    });
+
+
+    //Close tab
+    function close_tab(tab_id) {
+        $('.tabs-nav a[href="#' + tab_id + '"]').parent().remove();
+        $('#tabs div#' + tab_id).remove();
+        $("#tabs").tabs("refresh");
+    }
+
+    var readFile = function (fileName) {
+
+        var tabId = (new Date()).getTime();
+
+        $("div#tabs ul").append(
+            "<li><a href='#tab" + tabId + "' data-file-name='" + fileName + "'>" + fileName + "<span class='close'>x</span></a></li>"
+        );
+        $("div#tabs").append(
+            "<div id='tab" + tabId + "'>" +
+            "<div class='editor-wrap'><textarea rows='30' style='resize: none' id='tab" + tabId + "-textarea'></textarea></div>' " +
+            "</div>"
+        );
+
+        $("div#tabs").tabs("refresh");
+
+        editors['tab' + tabId] = CodeMirror.fromTextArea(document.getElementById("tab" + tabId + "-textarea"), {
+            lineNumbers: true,
+            mode: "Perl",
+            theme: "night",
+        });
+
+        $("div#tabs").tabs("option", "active", $("div#tabs ul li").length - 1);
+
+        fs.readFile(fileName, 'utf-8', (err, data) => {
+            if (err) {
+                dialog.showErrorBox("File Save Error", err.message);
+                return;
+            }
+
+            file_data = data;
+
+            editors['tab' + tabId].setValue(file_data);
+        });
     };
 
+    ipcRenderer.on('open_file', (event, arg) => {
+        dialog.showOpenDialog((fileNames) => {
+            // fileNames is an array that contains all the selected
+            if (fileNames === undefined) {
+                console.log("No file selected");
+                return;
+            }
 
-    /*
-     ipcRenderer.on('asynchronous-reply', (event, arg) => {
-     console.log(arg) // prints "pong"
-     document.getElementById("main-text").value = "adddd";
+            var fileName = fileNames[0];
 
-     })*/
+            readFile(fileName);
+        });
+    });
 
+    ipcRenderer.on('create_file', (event, arg) => {
+        create_file2()
+    });
+
+    ipcRenderer.on('save_file', (event, arg) => {
+        var tab = $('.ui-tabs-active');
+        var tabId = tab.find('a').attr('href').replace('#', '');
+        saveFile(tabId);
+        close_tab(tabId);
+    });
+
+
+    function open_file() {
+        dialog.showOpenDialog((fileNames) => {
+            // fileNames is an array that contains all the selected
+            if (fileNames === undefined) {
+                console.log("No file selected");
+                return;
+            }
+
+            var fileName = fileNames[0];
+
+            fs.readFile(fileName, 'utf-8', (err, data) => {
+                if (err) {
+                    dialog.showErrorBox("File Save Error", err.message);
+                    return;
+                }
+                document.getElementById("open_file_path").value = fileName;
+
+                alert("The file has been succesfully opened" + document.getElementById("open_file_path").value);
+                // Change how to handle the file content
+                document.getElementById("main-text").value = data;
+            });
+        });
+
+    }
+
+    function create_file() {
+        dialog.showSaveDialog(function (fileName) {
+
+            if (fileName === undefined) {
+                console.log("No file name entered");
+                return;
+            }
+
+            fs.writeFile(fileName, "", function (err) {
+                if (err) {
+                    dialog.showErrorBox("File Save Error", err.message);
+                    return;
+                }
+                document.getElementById("open_file_path").value = fileName;
+                alert("The file has been succesfully saved" + document.getElementById("open_file_path").value);
+
+            });
+
+        });
+
+        document.getElementById("main-text").value = ""
+    }
+
+    function saveFile(tabId) {
+        var filePath = $('.tabs-nav a[href="#' + tabId + '"]').attr('data-file-name');
+        console.log("editors", editors);
+        console.log("tabId", tabId);
+        var content = editors[tabId].getValue()
+        console.log('content', content);
+        fs.writeFile(filePath, content, (err) => {
+            if (err) {
+                alert("An error ocurred updating the file" + err.message);
+                console.log(err);
+                return;
+            }
+
+            alert("The file has been succesfully saved");
+        });
+    }
+
+
+    function create_file2() {
+        dialog.showSaveDialog(function (fileName) {
+
+            if (fileName === undefined) {
+                console.log("No file name entered");
+                return;
+            }
+
+            fs.writeFile(fileName, "", function (err) {
+                if (err) {
+                    dialog.showErrorBox("File Save Error", err.message);
+                    return;
+                }
+                alert("The file has been succesfully created");
+
+            });
+
+            $('.chrome-tabs').chromeTabs(settings).each((i, obj) => {
+                let $chromeTabs = $(obj); // jQuery & class.
+                $chromeTabs._ = $chromeTabs.data('chromeTabs');
+                let $tabs = $chromeTabs._.addTabs([
+                    {
+                        title: fileName,
+                        favicon: 'https://duckduckgo.com/favicon.ico',
+                        url: './new_tab.html?data=' + "" + "&file_name=" + fileName
+                    }
+                ]);
+
+                //document.getElementById("open_file_path").innerHTML = fileName;
+                //$('#open_file_path').text(fileName);
+
+            })
+
+        });
+
+    }
+
+
+    //Load folder
+    ipcRenderer.on('openFolder', (event, arg) => {
+        dialog.showOpenDialog({
+                properties: ['openDirectory']
+            },
+            (folders) => {
+                var folderName = folders[0];
+                var treeData = dirTree(folderName);
+
+                var formatTree = function (nodes) {
+                    var formmatedNodes = _.map(nodes, function (entry) {
+                        var formmatedEntry = {
+                            text: entry.name
+                        };
+
+                        if (entry.children && entry.children.length > 0) {
+                            formmatedEntry.children = formatTree(entry.children);
+                        }
+
+                        return formmatedEntry;
+                    });
+
+                    return formmatedNodes;
+                };
+
+                var treeReadyData = formatTree(treeData.children);
+
+                $('.tree-wrapper').empty();
+                $('.tree-wrapper').append('<div class="inner"></div>');
+
+                $('.tree-wrapper .inner').jstree({
+                    'core': {
+                        'data': treeReadyData
+                    }
+                });
+            });
+    });
+
+    //Log break points
+    ipcRenderer.on('debug', (event, arg) => {
+        var files = [];
+
+        $('.ui-tabs-panel.ui-widget-content').each(function () {
+            var tabID = $(this).attr('id');
+            var file = $('a[href="#'+tabID+'"]').attr('data-file-name');
+
+            var editor = $(this).find('.CodeMirror');
+            var lines = [];
+
+            $(editor).find('.CodeMirror-linenumber.has-breakpoint').each(function () {
+                lines.push($(this).text());
+            });
+
+            files.push({
+                file: file,
+                lines: lines
+            });
+        });
+
+        console.log("files", files);
+    });
+
+
+    jQuery(function () {
+        var tabs = $("#tabs").tabs();
+        tabs.find(".ui-tabs-nav").sortable({
+            axis: "x",
+            stop: function () {
+                tabs.tabs("refresh");
+            }
+        });
+    });
 </script>
 </body>
 </html>

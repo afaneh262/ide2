@@ -5,7 +5,7 @@
 	font: red;
 	font-size: 20px;
 }
-	
+
 
 .tree-wrapper {
     width: 300px;
@@ -17,11 +17,8 @@
 .main-wrapper {
     width: calc(100% - 300px);
     float: left;
-<<<<<<< Updated upstream
-=======
     color : red;
 	border: black;
-  
 }
 
 #tabs .tabs-nav {
@@ -38,7 +35,7 @@
 	color: black;
 	max-width: 125px;
     overflow: hidden;
-	
+
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
@@ -46,7 +43,7 @@
     padding-bottom: 1px;
     background-color: grey;
 	font-size: small;
-}	
+}
 
 .ui-tabs .ui-tabs-panel {
     padding: 0 !important;
@@ -93,11 +90,11 @@
 }
 
 
-    
+
 jstree-default .jstree-node, .jstree-default .jstree-icon {
     background-image: url("https://www.download3k.com/images/icon.gif?v=2") !important;
 	font-style: normal;
-	
+
 }
 
 .jstree-default .jstree-leaf>.jstree-ocl {
@@ -113,4 +110,51 @@ jstree-default .jstree-node, .jstree-default .jstree-icon {
     list-style-image: none;
     font-size: medium;
 >>>>>>> Stashed changes
+}
+
+#tabs .tabs-nav {
+
+}
+
+#tabs .tabs-nav a {
+    position: relative;
+    padding-right: 30px;
+}
+
+#tabs .tabs-nav .close {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    color: #000;
+    right: 5px;
+    top: 8px;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+}
+
+.CodeMirror-linenumber {
+    position: relative;
+}
+
+.CodeMirror-linenumber.has-breakpoint::before {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: red;
+    border-radius: 50%;
+    top: 4px;
+}
+
+.editor-wrap {
+    height: calc(100vh - 113px);
 }
