@@ -3,29 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>IDE</title>
-</head>
-<link rel="stylesheet" href="../css/main.css"/>
-<link rel="stylesheet" href="../css/jqueryFileTree.css"/>
-<link rel="stylesheet" href="../lib/codemirror.css"/>
-<link rel="stylesheet" href="../lib/night.css">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
+    <link href="../css/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen"/>
+
+    <link rel="stylesheet" href="../css/main.css"/>
+    <link rel="stylesheet" href="../lib/codemirror.css"/>
+    <link rel="stylesheet" href="../lib/night.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
 <link rel="stylesheet" href="API.css"/>
 
-<script>if (typeof module === 'object') {
-    window.module = module;
-    module = undefined;
-}</script>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<!-- Insert this line after script imports -->
-<script>if (window.module) module = window.module;</script>
+    <script>if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }</script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!-- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
 
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+    <link rel="stylesheet" href="../node_modules/x-chrome-tabs/src/css/base.min.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+    <link rel="stylesheet" href="../css/jqueryFileTree.css"/>
+    <link rel="stylesheet" href="../lib/codemirror.css"/>
+    <link rel="stylesheet" href="../lib/night.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
 
-<script src="../lib/codemirror.js"></script>
-<script src="../lib/perl.js"></script>
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!-- Insert this line after script imports -->
+    <script>
+        if (window.module) {
+            module = window.module;
+        }
+    </script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+
+    <script src="../lib/codemirror.js"></script>
+    <script src="../lib/perl.js"></script>
+</head>
 <body>
 <!-- All of the Node.js APIs are available in this renderer process. -->
 <!--We are using Node.js <script>document.write(process.versions.node)</script>,
@@ -154,11 +178,11 @@ and Electron <script>document.write(process.versions.electron)</script>.
         saveFile(tabId);
         //close_tab(tabId);
     });
-	
+
 	ipcRenderer.on('createApiTemplate', (event, arg) => {
         createApiTemplate();
     });
-	
+
 	ipcRenderer.on('createStepTemplate', (event, arg) => {
         createStepTemplate();
     });
@@ -306,6 +330,32 @@ and Electron <script>document.write(process.versions.electron)</script>.
             });
     });
 
+    //Log break points
+    ipcRenderer.on('debug', (event, arg) => {
+        var files = [];
+
+        $('.ui-tabs-panel.ui-widget-content').each(function () {
+            var tabID = $(this).attr('id');
+            var file = $('a[href="#' + tabID + '"]').attr('data-file-name');
+
+            var editor = $(this).find('.CodeMirror');
+            var lines = [];
+
+            $(editor).find('.CodeMirror-linenumber.has-breakpoint').each(function () {
+                lines.push($(this).text());
+            });
+
+            files.push({
+                file: file,
+                lines: lines
+            });
+        });
+
+
+        console.log("files", files);
+    });
+
+
     jQuery(function () {
         var tabs = $("#tabs").tabs();
         tabs.find(".ui-tabs-nav").sortable({
@@ -315,21 +365,21 @@ and Electron <script>document.write(process.versions.electron)</script>.
             }
         });
     });
-	
-	
+
+
 	function createApiTemplate()
 	{
 		//alert("API");
 		// Get the modal
 		var modal = document.getElementById('myModal');
-		
+
 		// Get the <span> element that closes the modal
 		var span = document.getElementsByClassName("close")[0];
 
-		// When the user clicks on the button, open the modal 
+		// When the user clicks on the button, open the modal
 		modal.style.display = "block";
 
-		
+
 	}
 	var modal = document.getElementById('myModal');
 	var span = document.getElementsByClassName("close")[0];
@@ -343,18 +393,18 @@ and Electron <script>document.write(process.versions.electron)</script>.
 			modal.style.display = "none";
 		}
 	}
-	
+
 	function createApi()
 	{
 		var api_full_path = document.getElementById('api_full_path').value;
 		//alert(api_full_path);
 		var modal = document.getElementById('myModal');
 		modal.style.display = "none";
-		
+
 		//$host->api->shell->hypervisor->vfs->bus->show_max_allowed_vfs($bus_number)
-		
+
 		api_file_name = "";
-		
+
 		if (api_full_path === undefined) {
 			alert("No API name entered");
 			return;
@@ -369,12 +419,12 @@ and Electron <script>document.write(process.versions.electron)</script>.
 
 		});
 		//append to file;
-		
+
 		readFile(api_file_name);
-		
+
 	}
-	
-	
+
+
 	function createStepTemplate()
 	{
 		alert("STEP");
