@@ -29,6 +29,13 @@ function createWindow() {
             mainWindow.webContents.send('create_file')
         }
     }))
+
+    menu.append(new MenuItem({type: 'separator'}));
+    menu.append(new MenuItem({
+        label: 'Debug', click() {
+            mainWindow.webContents.send('debug');
+        }
+    }));
     menu.append(new MenuItem({type: 'separator'}))
     menu.append(new MenuItem({
         label: 'open file', click() {

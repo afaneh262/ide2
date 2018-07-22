@@ -278,6 +278,31 @@ and Electron <script>document.write(process.versions.electron)</script>.
             });
     });
 
+    //Log break points
+    ipcRenderer.on('debug', (event, arg) => {
+        var files = [];
+
+        $('.ui-tabs-panel.ui-widget-content').each(function () {
+            var tabID = $(this).attr('id');
+            var file = $('a[href="#'+tabID+'"]').attr('data-file-name');
+
+            var editor = $(this).find('.CodeMirror');
+            var lines = [];
+
+            $(editor).find('.CodeMirror-linenumber.has-breakpoint').each(function () {
+                lines.push($(this).text());
+            });
+
+            files.push({
+                file: file,
+                lines: lines
+            });
+        });
+
+        console.log("files", files);
+    });
+
+
     jQuery(function () {
         var tabs = $("#tabs").tabs();
         tabs.find(".ui-tabs-nav").sortable({
