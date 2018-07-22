@@ -17,28 +17,33 @@ function createWindow() {
     }))
     menu.append(new MenuItem({type: 'separator'}))
     menu.append(new MenuItem({
-        label: 'Open Folder', click() {
-            mainWindow.webContents.send('openFolder')
-        }
-    }))
-    menu.append(new MenuItem({type: 'separator'}))
-
-    menu.append(new MenuItem({type: 'separator'}))
-    menu.append(new MenuItem({
-        label: 'create file', click() {
-            mainWindow.webContents.send('create_file')
-        }
-    }))
-    menu.append(new MenuItem({type: 'separator'}))
-    menu.append(new MenuItem({
-        label: 'open file', click() {
+		label: 'File',
+		submenu: [
+		{label: 'open file', click() {
             mainWindow.webContents.send('open_file')
-        }
-    }))
-    menu.append(new MenuItem({
-        label: 'save file', click() {
+		}},
+		{label: 'Open Folder', click() {
+            mainWindow.webContents.send('openFolder')
+        }},
+		{label: 'create file', click() {
+            mainWindow.webContents.send('create_file')
+        }},
+		{label: 'save file', click() {
             mainWindow.webContents.send('save_file')
-        }
+        }}
+		]
+    }))
+	
+	menu.append(new MenuItem({
+		label: 'Templates',
+		submenu: [
+		{label: 'Create API template', click() {
+            mainWindow.webContents.send('createApiTemplate')
+		}},
+		{label: 'Create Step Template', click() {
+            mainWindow.webContents.send('createStepTemplate')
+        }}
+		]
     }))
 
     Menu.setApplicationMenu(menu)
