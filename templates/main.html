@@ -312,47 +312,9 @@ and Electron <script>document.write(process.versions.electron)</script>.
                 var folderName = folders[0];
                 var treeData = dirTree(folderName);
 
-/*                var formatTree = function (nodes) {
-                    var formmatedNodes = _.map(nodes, function (entry) {
-                        var formmatedEntry = {
-                            text: entry.name
-                        };
-
-                        if (entry.children && entry.children.length > 0) {
-                            formmatedEntry.children = formatTree(entry.children);
-                        }
-
-                        return formmatedEntry;
-                    });
-
-                    return formmatedNodes;
-                };
-
-                var treeReadyData = formatTree(treeData.children);*/
-
                 $('.tree-wrapper').empty();
                 $('.tree-wrapper').append('<ul class="ztree"></ul>');
-/*
-                var zTreeObj;
 
-                // zTree configuration information, refer to API documentation (setting details)
-                var setting = {};
-
-                // zTree data attributes, refer to the API documentation (treeNode data details)
-                var zNodes = [
-                    {
-                        name: "test1",
-                        open: true,
-                        children: [
-                        {name: "test1_1"}, {name: "test1_2"}]
-                    },
-                    {
-                        name: "test2", open: true, children: [
-                        {name: "test2_1"}, {name: "test2_2"}]
-                    }
-                ];*/
-
-console.log("$.fn.zTree.init", $.fn.zTree.init);
                 zTreeObj = $.fn.zTree.init($('.tree-wrapper ul'), {}, treeData.children);
             });
     });
