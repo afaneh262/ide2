@@ -91,7 +91,7 @@
 }
 
 .editor-wrap {
-    height: calc(100vh - 113px - 165px);
+    height: calc(100vh - 200px);
     font-size: medium;
     font-style: italic;
 }
@@ -142,7 +142,14 @@
 
 .CodeMirror {
     border: 1px solid #eee;
-    height: auto;
+    height:auto;
+	width: 100%;
+	display: inline-block;
+}
+
+.cm-s-night.CodeMirror
+{
+	height: 100%;
 }
 
 .CodeMirror-linenumber {
@@ -161,7 +168,7 @@
 }
 
 .editor-wrap {
-    height: calc(100vh - 113px);
+    height: calc(100vh - 250px);
 }
 
 .jstree-default .jstree-anchor .jstree-icon:empty {
