@@ -50,7 +50,6 @@ function createWindow() {
         submenu: [
 			{
 				label: 'Debug', accelerator: 'F5', click() {
-					console.log("deeeebug");
 					mainWindow.webContents.send('debug');
 				}
 			},
@@ -69,12 +68,12 @@ function createWindow() {
         label: 'Templates',
         submenu: [
             {
-                label: 'Create API template', accelerator: 'Shift+A', click() {
+                label: 'Create Host API template', accelerator: 'Shift+A', click() {
                 mainWindow.webContents.send('createApiTemplate')
             }
             },
             {
-                label: 'Create Step Template', accelerator: 'Shift+S', click() {
+                label: 'Create Host Step Template', accelerator: 'Shift+S', click() {
                 mainWindow.webContents.send('createStepTemplate')
             }
             }
