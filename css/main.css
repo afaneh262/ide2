@@ -47,7 +47,9 @@
     color: black;
     max-width: 125px;
     overflow: hidden;
-
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
@@ -59,20 +61,6 @@
 
 .ui-tabs .ui-tabs-panel {
     padding: 0 !important;
-}
-
-#tabs .tabs-nav .close {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #fff;
-    color: blue;
-    right: 5px;
-    top: 8px;
-    text-align: center;
-    line-height: 20px;
-    border-radius: 50%;
-    cursor: pointer;
 }
 
 .CodeMirror-linenumber {
@@ -96,27 +84,6 @@
     font-style: italic;
 }
 
-.jstree-node:not(.jstree-leaf) > .jstree-ocl {
-    background-size: contain !important;
-    background-position: center !important;
-    background-image: url("https://www.download3k.com/images/icon.gif?v=2") !important;
-}
-
-.jstree-node.jstree-leaf > .jstree-ocl {
-    background-size: contain !important;
-    background-position: center !important;
-    background-image: url("https://vignette.wikia.nocookie.net/tlos-huggers/images/5/5e/Default.png/revision/latest?cb=20160816122145") !important;
-}
-
-.jstree-node, .jstree-children, .jstree-container-ul {
-    display: block;
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    list-style-image: none;
-    font-size: medium;
-}
-
 #tabs .tabs-nav {
 
 }
@@ -133,11 +100,13 @@
     background: #fff;
     color: #000;
     right: 5px;
-    top: 8px;
+    top: 50%;
     text-align: center;
     line-height: 20px;
     border-radius: 50%;
     cursor: pointer;
+    font-size: 12px;
+    margin-top: -10px;
 }
 
 .CodeMirror {
@@ -169,15 +138,4 @@
 
 .editor-wrap {
     height: calc(100vh - 250px);
-}
-
-.jstree-default .jstree-anchor .jstree-icon:empty {
-    display: none;
-}
-
-.jstree-default .jstree-anchor {
-    max-width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
