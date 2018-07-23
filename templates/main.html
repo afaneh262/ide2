@@ -64,35 +64,31 @@ and Electron <script>document.write(process.versions.electron)</script>.
 		</div>
 	</div>
     <div class="main-wrapper">
-	<div id="myModal" class="modal">
-
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close">&times;</span>
-		API Name/Path:<br><input type="text" id="api_full_path" style="width:100%"><br>
-		<br>
-		<div id="options">
-		Supported OS's:<br>
-		<input type="checkbox" id="api_all_os_support" checked>All OS's<br>
-		<input type="checkbox">RH Family<br>
-		<input type="checkbox">RH 7.2<br>
-		<input type="checkbox">Ubuntu Family<br>
-		<input type="checkbox">Fedora 21<br>
-		</div>
-		<br>
-		<button type="submit" value="Submit" onclick="createApi()" id="api_btn">Create</button>
-		<button type="submit" value="Submit" onclick="createStep()" id="step_btn">Create</button>
-  </div>
-
-</div>
-
         <div id="tabs">
             <ul class="tabs-nav"></ul>
         </div>
     </div>
 	<div id="debug-area"></div>
 </div>
-
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        API Name/Path:<br><input type="text" id="api_full_path" style="width:100%"><br>
+        <br>
+        <div id="options">
+            Supported OS's:<br>
+            <input type="checkbox" id="api_all_os_support" checked>All OS's<br>
+            <input type="checkbox">RH Family<br>
+            <input type="checkbox">RH 7.2<br>
+            <input type="checkbox">Ubuntu Family<br>
+            <input type="checkbox">Fedora 21<br>
+        </div>
+        <br>
+        <button type="submit" value="Submit" onclick="createApi()" id="api_btn">Create</button>
+        <button type="submit" value="Submit" onclick="createStep()" id="step_btn">Create</button>
+    </div>
+</div>
 <script>
 
     var editors = [];
