@@ -64,28 +64,6 @@ and Electron <script>document.write(process.versions.electron)</script>.
 		</div>
 	</div>
     <div class="main-wrapper">
-	<div id="myModal" class="modal">
-
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close">&times;</span>
-		API Name/Path:<br><input type="text" id="api_full_path" style="width:100%"><br>
-		<br>
-		<div id="options">
-		Supported OS's:<br>
-		<input type="checkbox" id="api_all_os_support" checked>All OS's<br>
-		<input type="checkbox">RH Family<br>
-		<input type="checkbox">RH 7.2<br>
-		<input type="checkbox">Ubuntu Family<br>
-		<input type="checkbox">Fedora 21<br>
-		</div>
-		<br>
-		<button type="submit" value="Submit" onclick="createApi()" id="api_btn">Create</button>
-		<button type="submit" value="Submit" onclick="createStep()" id="step_btn">Create</button>
-  </div>
-
-</div>
-
         <div id="tabs">
             <ul class="tabs-nav"></ul>
         </div>
@@ -99,7 +77,25 @@ and Electron <script>document.write(process.versions.electron)</script>.
 	
 	</div>
 </div>
-
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        API Name/Path:<br><input type="text" id="api_full_path" style="width:100%"><br>
+        <br>
+        <div id="options">
+            Supported OS's:<br>
+            <input type="checkbox" id="api_all_os_support" checked>All OS's<br>
+            <input type="checkbox">RH Family<br>
+            <input type="checkbox">RH 7.2<br>
+            <input type="checkbox">Ubuntu Family<br>
+            <input type="checkbox">Fedora 21<br>
+        </div>
+        <br>
+        <button type="submit" value="Submit" onclick="createApi()" id="api_btn">Create</button>
+        <button type="submit" value="Submit" onclick="createStep()" id="step_btn">Create</button>
+    </div>
+</div>
 <script>
 
     var editors = [];
@@ -692,20 +688,20 @@ and Electron <script>document.write(process.versions.electron)</script>.
 
     });
 
-	/*window.addEventListener('load', function(){
-		readFile("C:\\Users\\mabuhassan\\Desktop\\Hack\\test\\H-IDE\\ide2\\initial.txt");
+    window.addEventListener('load', function () {
+        var folderName = "./";
+        readFile('./initial.txt');
 
-                var folderName = "C:\\Users\\mabuhassan\\Desktop\\Hack\\test\\H-IDE";
-                var treeData = dirTree(folderName);
-
-                $('.tree-wrapper').empty();
-                $('.tree-wrapper').append('<ul class="ztree"></ul>');
-
-console.log("$.fn.zTree.init", $.fn.zTree.init);
-                zTreeObj = $.fn.zTree.init($('.tree-wrapper ul'), {}, treeData.children);
-		
-	}, false )*/
-
+        zTreeObj = $.fn.zTree.init($('.tree-wrapper ul'), {
+            callback: {
+                onMouseUp: function (p1, p2, p3) {
+                    if (p3 && p3.type == 'file') {
+                        readFile('./' + p3.path);
+                    }
+                }
+            }
+        }, treeData.children);
+    }, false);
 
 </script>
 </body>
