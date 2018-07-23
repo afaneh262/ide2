@@ -8,20 +8,24 @@
 
 #debug-area {
     position: fixed;
-    width: calc(100% - 300px);
-    height: 200px;
+    width: calc(100% - 306px);
+    height: 197px;
     font-size: 20px;
     background-color: black;
     color: white;
     bottom: 0;
     right: 0;
+	margin-bottom: 3px;
+	margin-right: 3px;
+	margin-left: 3px;
 }
 
 .tree-wrapper {
-    width: 300px;
+    width: 100%px;
     float: left;
     font-size: 20px;
     background-color: white;
+	padding-top: 5px;
 }
 
 .main-wrapper {
@@ -138,4 +142,25 @@
 
 .editor-wrap {
     height: calc(100vh - 250px);
+}
+
+.tree-menu
+{
+    height: 30px;
+    background-color: gainsboro;
+    border: 1px solid grey;
+    padding-left: 5px;
+    font-size: 20px;
+    font-style: italic;
+}
+
+#tree
+{
+    width: 287px;
+    float: left;
+    font-size: 20px;
+    background-color: white;
+    border: 1px solid grey;
+    margin-right: 10px;
+    height: 672px;
 }
