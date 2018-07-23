@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>IDE</title>
-    <link href="../css/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen"/>
 
     <link rel="stylesheet" href="../css/main.css"/>
     <link rel="stylesheet" href="../lib/codemirror.css"/>
     <link rel="stylesheet" href="../lib/night.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
 <link rel="stylesheet" href="API.css"/>
 
     <script>if (typeof module === 'object') {
@@ -23,11 +21,10 @@
     <link rel="stylesheet" href="../node_modules/x-chrome-tabs/src/css/base.min.css"/>
     <link rel="stylesheet" href="../css/main.css"/>
     <link rel="stylesheet" href="../css/main.css"/>
-    <link rel="stylesheet" href="../css/jqueryFileTree.css"/>
     <link rel="stylesheet" href="../lib/codemirror.css"/>
     <link rel="stylesheet" href="../lib/night.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
+    <link rel="stylesheet" href="../helpers/zTree_v3/css/zTreeStyle/zTreeStyle.css"/>
 
     <script>
         if (typeof module === 'object') {
@@ -46,6 +43,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+    <script type="text/javascript" src="../helpers/zTree_v3/js/jquery.ztree.all.js"></script>
 
     <script src="../lib/codemirror.js"></script>
     <script src="../lib/perl.js"></script>
@@ -58,7 +56,9 @@ and Electron <script>document.write(process.versions.electron)</script>.
 -->
 
 <div class="wrapper">
-    <div class="tree-wrapper"></div>
+    <div class="tree-wrapper">
+        <ul class="ztree"></ul>
+    </div>
     <div class="main-wrapper">
 	<div id="myModal" class="modal">
 
@@ -310,7 +310,7 @@ and Electron <script>document.write(process.versions.electron)</script>.
                 var folderName = folders[0];
                 var treeData = dirTree(folderName);
 
-                var formatTree = function (nodes) {
+/*                var formatTree = function (nodes) {
                     var formmatedNodes = _.map(nodes, function (entry) {
                         var formmatedEntry = {
                             text: entry.name
@@ -326,16 +326,32 @@ and Electron <script>document.write(process.versions.electron)</script>.
                     return formmatedNodes;
                 };
 
-                var treeReadyData = formatTree(treeData.children);
+                var treeReadyData = formatTree(treeData.children);*/
 
                 $('.tree-wrapper').empty();
-                $('.tree-wrapper').append('<div class="inner"></div>');
+                $('.tree-wrapper').append('<ul class="ztree"></ul>');
+/*
+                var zTreeObj;
 
-                $('.tree-wrapper .inner').jstree({
-                    'core': {
-                        'data': treeReadyData
+                // zTree configuration information, refer to API documentation (setting details)
+                var setting = {};
+
+                // zTree data attributes, refer to the API documentation (treeNode data details)
+                var zNodes = [
+                    {
+                        name: "test1",
+                        open: true,
+                        children: [
+                        {name: "test1_1"}, {name: "test1_2"}]
+                    },
+                    {
+                        name: "test2", open: true, children: [
+                        {name: "test2_1"}, {name: "test2_2"}]
                     }
-                });
+                ];*/
+
+console.log("$.fn.zTree.init", $.fn.zTree.init);
+                zTreeObj = $.fn.zTree.init($('.tree-wrapper ul'), {}, treeData.children);
             });
     });
 
