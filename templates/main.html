@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>IDE</title>
+    <title>Phoenix IDE</title>
     <link href="../css/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen"/>
 
     <link rel="stylesheet" href="../css/main.css"/>
@@ -99,6 +99,8 @@ and Electron <script>document.write(process.versions.electron)</script>.
     const dialog = require('electron').remote.dialog;
     const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
     var file_data = "";
+	
+	
 
     $(".tabs-nav").on("click", ".close", function (ev) {
         ev.preventDefault();
@@ -700,6 +702,10 @@ and Electron <script>document.write(process.versions.electron)</script>.
 		document.getElementById('debug-area').innerHTML = out;
 
     });
+	
+	window.addEventListener('load', function(){	
+		readFile("C:\\Users\\mabuhassan\\Desktop\\Hack\\test\\H-IDE\\ide2\\initial.txt");
+	}, false )
 
 </script>
 </body>
