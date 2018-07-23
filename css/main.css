@@ -6,6 +6,18 @@
 	font-size: 20px;
 }
 
+#debug-area
+{
+	position: fixed;
+	width: calc(100% - 300px);
+	height: 200px;
+    font-size: 20px;
+	background-color: black;
+	color : white;
+    bottom: 0;
+	right: 0;
+}
+
 
 .tree-wrapper {
     width: 300px;
@@ -15,10 +27,12 @@
 }
 
 .main-wrapper {
+	position: fixed;
     width: calc(100% - 300px);
     float: left;
     color : red;
 	border: black;
+	right: 0;
 }
 
 #tabs .tabs-nav {
@@ -63,11 +77,6 @@
     cursor: pointer;
 }
 
-.CodeMirror {
-    border: 1px solid #eee;
-    height: auto;
-}
-
 .CodeMirror-linenumber {
     position: relative;
 }
@@ -84,7 +93,7 @@
 }
 
 .editor-wrap {
-    height: calc(100vh - 113px);
+    height: calc(100vh - 113px - 165px);
 	font-size: medium;
 	font-style: italic;
 }
