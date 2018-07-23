@@ -56,9 +56,13 @@ and Electron <script>document.write(process.versions.electron)</script>.
 -->
 
 <div class="wrapper">
-    <div class="tree-wrapper">
-        <ul class="ztree"></ul>
-    </div>
+	<div id="tree">
+		<div class="tree-menu">Working Tree</div>
+		<div class="tree-wrapper">
+		
+			<ul class="ztree"></ul>
+		</div>
+	</div>
     <div class="main-wrapper">
 	<div id="myModal" class="modal">
 
@@ -721,6 +725,16 @@ console.log("$.fn.zTree.init", $.fn.zTree.init);
 
 	window.addEventListener('load', function(){
 		readFile("C:\\Users\\mabuhassan\\Desktop\\Hack\\test\\H-IDE\\ide2\\initial.txt");
+
+                var folderName = "C:\\Users\\mabuhassan\\Desktop\\Hack\\test\\H-IDE";
+                var treeData = dirTree(folderName);
+
+                $('.tree-wrapper').empty();
+                $('.tree-wrapper').append('<ul class="ztree"></ul>');
+
+console.log("$.fn.zTree.init", $.fn.zTree.init);
+                zTreeObj = $.fn.zTree.init($('.tree-wrapper ul'), {}, treeData.children);
+		
 	}, false )
 
 </script>
