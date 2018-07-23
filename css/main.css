@@ -101,8 +101,16 @@
 
 
 jstree-default .jstree-node, .jstree-default .jstree-icon {
+    background-image: url("https://vignette.wikia.nocookie.net/tlos-huggers/images/5/5e/Default.png/revision/latest?cb=20160816122145") !important;
+	font-style: normal;
+	background-position: center !important;
+
+}
+jstree-icon jstree-ocl {
     background-image: url("https://www.download3k.com/images/icon.gif?v=2") !important;
 	font-style: normal;
+	background-position: center !important;
+	background-size: cover;
 
 }
 
@@ -118,7 +126,6 @@ jstree-default .jstree-node, .jstree-default .jstree-icon {
     list-style-type: none;
     list-style-image: none;
     font-size: medium;
->>>>>>> Stashed changes
 }
 
 #tabs .tabs-nav {
@@ -162,4 +169,12 @@ jstree-default .jstree-node, .jstree-default .jstree-icon {
     background: red;
     border-radius: 50%;
     top: 4px;
+}
+
+.editor-wrap {
+    height: calc(100vh - 113px);
+}
+
+.jstree-default .jstree-anchor .jstree-icon:empty {
+	display: none;
 }
