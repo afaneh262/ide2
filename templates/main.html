@@ -691,6 +691,7 @@ and Electron <script>document.write(process.versions.electron)</script>.
     window.addEventListener('load', function () {
         var folderName = "./";
         readFile('./initial.txt');
+        var treeData = dirTree(folderName);
 
         zTreeObj = $.fn.zTree.init($('.tree-wrapper ul'), {
             callback: {
