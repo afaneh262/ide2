@@ -125,11 +125,6 @@
 	height: 100%;
 }
 
-.CodeMirror pre {
-	font-size: 15px;
-	font-style: normal;
-
-}
 .CodeMirror-linenumber {
     position: relative;
 }
@@ -155,10 +150,8 @@
     background-color: gainsboro;
     border: 1px solid grey;
     padding-left: 5px;
-    font-size: 17px;
-    font-style: normal;
-	line-height: 25px;
-	
+    font-size: 20px;
+    font-style: italic;
 }
 
 #tree
@@ -167,12 +160,15 @@
     float: left;
     font-size: 20px;
     background-color: white;
-
+<<<<<<< Updated upstream
     border: 1px solid grey;
     margin-right: 10px;
     height: 672px;
 }
-
+=======
+	border: 1px solid grey;
+	margin-right: 10px;
+	height: 672px;
 
 ul.haya {
     list-style-type: none;
@@ -180,9 +176,6 @@ ul.haya {
     padding: 0;
     overflow: hidden;
     background-color: #333;
-	font-size: medium;
-	line-height: 5px;
-	background-color: gainsboro;
 }
 
 ul.haya li {
@@ -206,4 +199,4 @@ ul.haya li a:hover {
 ul.haya .active {
     background-color: red;
 }
-
+>>>>>>> Stashed changes
