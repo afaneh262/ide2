@@ -74,7 +74,8 @@ and Electron <script>document.write(process.versions.electron)</script>.
 			<li><a href="#console">Console</a></li>
 			<li><a href="#debug">Debug</a></li>
 		</ul>
-	
+        <button class="btn-next">Next</button>
+        <div class="debug-area-text"></div>
 	</div>
 </div>
 <div id="myModal" class="modal">
@@ -347,8 +348,33 @@ and Electron <script>document.write(process.versions.electron)</script>.
             });
         });
 
+        function showLine(lineNumber) {
+            $('.CodeMirror-code>div').removeClass('hey');
+            $('.CodeMirror-code>div:nth-child('+lineNumber+')').addClass('hey');
+            $('#debug-area .debug-area-text').append('<p>Line: '+lineNumber+' || '+$('.CodeMirror-code>div:nth-child('+lineNumber+') pre span').text()+' || debugger output: Error.</p>');
+        };
 
-        console.log("files", files);
+        $('#debug-area .debug-area-text').empty;
+        $('#debug-area .debug-area-text').append('<p>Breakpoints set to:</p>');
+
+        files.forEach(function (file) {
+           if(file && file.lines && file.lines.length > 0) {
+               $('#debug-area .debug-area-text').append('<p>File:'+file.file+', Lines: '+file.lines.join(', ')+'</p>');
+           }
+        });
+
+        var activeLine = 0;
+        showLine(files[0].lines[activeLine]);
+
+        $('#debug-area .btn-next').off('click')
+            .on('click', function () {
+                activeLine += 1;
+                if(files[0].lines[activeLine]) {
+                    showLine(files[0].lines[activeLine]);
+                } else {
+                    $('#debug-area .debug-area-text').append('<p>Debug done.</p>');
+                }
+            });
     });
 
 
@@ -676,8 +702,8 @@ and Electron <script>document.write(process.versions.electron)</script>.
 	// compile
 	ipcRenderer.on('compile', (event, arg) => {		
 		var sync = require('child_process').spawnSync;
-		
 		var ls = sync('perl', ['-c', 'test.pl']);
+		console.log("ls", ls);
 
 		console.log(ls.stderr.toString());
 		var out = ls.stderr.toString();
@@ -685,14 +711,14 @@ and Electron <script>document.write(process.versions.electron)</script>.
 		out = out.replace("<br/>", "");
 		out = out.replace("test.pl had compilation errors.", "<br/>test.pl had compilation errors.");
 		document.getElementById('debug-area').innerHTML = out;
-
     });
 
     window.addEventListener('load', function () {
         var folderName = "./";
-        readFile('./initial.txt');
+        readFile('./test.pl');
         var treeData = dirTree(folderName);
-
+        treeData.name = 'Project';
+        treeData.open = true;
         zTreeObj = $.fn.zTree.init($('.tree-wrapper ul'), {
             callback: {
                 onMouseUp: function (p1, p2, p3) {
@@ -701,7 +727,7 @@ and Electron <script>document.write(process.versions.electron)</script>.
                     }
                 }
             }
-        }, treeData.children);
+        }, treeData);
     }, false);
 
 </script>

@@ -18,6 +18,48 @@
 	margin-bottom: 3px;
 	margin-right: 3px;
 	margin-left: 3px;
+    padding-top: 30px;
+}
+
+#debug-area .btn-next {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    background: #ccc;
+    border-radius: 5px;
+    box-shadow: none;
+    padding: 5px 10px;
+    border: 1px solid #222;
+    cursor: pointer;
+    transition: 0.2s all;
+}
+
+#debug-area .btn-next:hover {
+    background: #222;
+    color: #ccc;
+}
+
+.debug-area-text {
+    font-size: 16px;
+    padding: 15px;
+    font-family: Verdana, Arial, Helvetica, AppleGothic, sans-serif;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.debug-area-text p {
+    margin: 0 0 5px;
+    font-family: Verdana, Arial, Helvetica, AppleGothic, sans-serif;
+}
+
+
+.CodeMirror-code>div {
+    transition: 0.2s all;
+}
+
+.CodeMirror-code>div.hey {
+    background: red;
+    padding: 5px 0;
 }
 
 .tree-wrapper {
@@ -181,9 +223,13 @@ ul.haya {
     padding: 0;
     overflow: hidden;
     background-color: #333;
-	font-size: medium;
-	line-height: 5px;
-	background-color: gainsboro;
+    font-size: medium;
+    line-height: 5px;
+    background-color: gainsboro;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 ul.haya li {
